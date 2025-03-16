@@ -1,47 +1,59 @@
-#include<bits/stdc++.h>
+#include <iostream>
+#include <vector>
 using namespace std;
-#define fio ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-#define int long long int 
-#define vi vector<int>
-#define vs vector<string>
-#define ivec(arr) for (int i = 0; i < arr.size(); i++) cin >> arr[i];
-#define w(x) int x; cin>>x; while(x--)
-#define pb push_back
-
-
-int32_t main() {
-    fio;
+ 
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     
-    int n, q;
-    cin >> n >> q;
+    int N, Q;
+    cin >> N >> Q;
     
-    vi pigeon(n, 1);
-    vector<set<int>> nest(n);
-
-    for (int i = 0; i < q; i++) {
-        int op, a = -1, b = -1;
+    // For each pigeon i, store its current "group id" (initially, pigeon i is in group i).
+    vector<int> pigeonGroup(N + 1);
+    // For each nest label l, store the group id that currently corresponds to that nest.
+    vector<int> groupForLabel(N + 1);
+    // For each group id g, store its current nest label.
+    vector<int> labelForGroup(N + 1);
+    
+    // Initialize: pigeon i is in group i and nest i has label i.
+    for (int i = 1; i <= N; i++) {
+        pigeonGroup[i] = i;
+        groupForLabel[i] = i;
+        labelForGroup[i] = i;
+    }
+    
+    // Process operations.
+    while (Q--) {
+        int op;
         cin >> op;
-        if (op == 3) cin >> a;
-        else cin >> a >> b;
-        
-        if (op == 3) {
-            cout << arr[a] << "\n";
-            continue;
-        }
-
         if (op == 1) {
-            nest[pigeon[a]];
-            pigeon[a] = b;
-            nest[b].insert(a);
-            continue;
-        }
-
-        if (op == 2) {
-            swap(nest[a], nest[b]);
-            
+            int a, b;
+            cin >> a >> b;
+            // Type 1: Move pigeon a to nest b.
+            // Set pigeon a's group to the group corresponding to nest b.
+            pigeonGroup[a] = groupForLabel[b];
+        } else if (op == 2) {
+            int a, b;
+            cin >> a >> b;
+            // Type 2: Swap all pigeons in nest a with those in nest b.
+            // Let groupA and groupB be the groups currently corresponding to nest labels a and b.
+            int groupA = groupForLabel[a];
+            int groupB = groupForLabel[b];
+            // Swap the mapping so that nest a now corresponds to groupB and nest b to groupA.
+            groupForLabel[a] = groupB;
+            groupForLabel[b] = groupA;
+            // Also update the label for each group.
+            labelForGroup[groupA] = b;
+            labelForGroup[groupB] = a;
+        } else if (op == 3) {
+            int a;
+            cin >> a;
+            // Type 3: Report the nest label of pigeon a.
+            // Pigeon a is in group pigeonGroup[a]; its nest label is labelForGroup[pigeonGroup[a]].
+            cout << labelForGroup[pigeonGroup[a]] << "\n";
         }
     }
     
-     
     return 0;
 }
